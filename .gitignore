@@ -26,7 +26,6 @@ dist-ssr
 # Environment files
 .env
 .env.local
-backend/.env
 
 # Build artifacts
 fix_api_urls.cjs
