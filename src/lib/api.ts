@@ -1,4 +1,4 @@
-// Central API base URL configuration
-// Development (.env.local): VITE_API_URL=http://localhost:5000
-// Production (Vercel env vars): VITE_API_URL=https://smart-hospital-backend.onrender.com
-export const API_BASE: string = import.meta.env.VITE_API_URL ?? 'http://localhost:5000';
+// Hardcoded to guarantee Vercel deployment points to Render
+export const API_BASE: string = import.meta.env.PROD 
+    ? 'https://smart-hospital-kpr1.onrender.com' 
+    : 'http://localhost:5000';
