@@ -17,8 +17,13 @@ ALLOWED_ORIGINS = os.environ.get(
 ).split(",")
 CORS(app, resources={r"/api/*": {"origins": ALLOWED_ORIGINS}})
 
-SUPABASE_URL = os.environ.get("SUPABASE_URL", "http://localhost:54321")
-SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "dummy_key")
+SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
+SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "")
+
+if not SUPABASE_URL or not SUPABASE_KEY:
+    raise RuntimeError(
+        "SUPABASE_URL and SUPABASE_KEY environment variables must be set."
+    )
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
