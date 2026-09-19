@@ -26,18 +26,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }: any) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchUserRole(session.user.id);
-      } else {
-        setIsLoading(false);
-      }
-    });
+    const stored = localStorage.getItem('mock_session');
+    if (stored) {
+      const parsedSession = JSON.parse(stored);
+      setSession(parsedSession);
+      setUser(parsedSession.user);
+      setRole(parsedSession.user.user_metadata.role);
+      setStaffId(parsedSession.user.user_metadata.staff_id);
+      setIsLoading(false);
+    } else {
+      supabase.auth.getSession().then(({ data: { session } }: any) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        if (session?.user) {
+          fetchUserRole(session.user.id);
+        } else {
+          setIsLoading(false);
+        }
+      });
+    }
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event: any, session: any) => {
+      const stored = localStorage.getItem('mock_session');
+      if (stored) return; // Ignore real auth events if using bypass
+
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
