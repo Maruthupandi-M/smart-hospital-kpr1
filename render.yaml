@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: smart-hospital-backend
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: SUPABASE_URL
+        value: https://afaifwznmyaqeydfxcra.supabase.co
+      - key: SUPABASE_KEY
+        sync: false
+      - key: ALLOWED_ORIGINS
+        value: https://smart-hospital-kpr.vercel.app,http://localhost:5173
+      - key: PYTHON_VERSION
+        value: 3.11.0

@@ -9,8 +9,13 @@ from datetime import datetime
 load_dotenv()
 
 app = Flask(__name__)
-# Enable CORS for the frontend port
-CORS(app, resources={r"/api/*": {"origins": "*"}})
+
+# CORS: allow local dev and deployed Vercel frontend
+ALLOWED_ORIGINS = os.environ.get(
+    "ALLOWED_ORIGINS",
+    "http://localhost:5173,https://smart-hospital-kpr.vercel.app"
+).split(",")
+CORS(app, resources={r"/api/*": {"origins": ALLOWED_ORIGINS}})
 
 SUPABASE_URL = os.environ.get("SUPABASE_URL", "http://localhost:54321")
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "dummy_key")
@@ -1354,36 +1359,5 @@ def get_reports_overview():
         return jsonify({"error": "Failed to generate reports"}), 500
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
-import uuid
-
-@app.route("/api/simulation/state", methods=["GET"])
-@require_auth
-def get_simulation_state():
-    return jsonify({
-        "status": "Active",
-        "events": [],
-        "metrics": {
-            "beds_utilized": 85,
-            "doctors_utilized": 90,
-            "patient_waiting_avg": 25
-        }
-    }), 200
-
-@app.route("/api/simulation/demand-surge", methods=["POST"])
-@require_auth
-def simulate_surge():
-    data = request.json
-    return jsonify({"message": f"Demand surge of severity {data.get('severity')} initiated."}), 200
-
-@app.route("/api/simulation/resource-change", methods=["POST"])
-@require_auth
-def simulate_resource_change():
-    data = request.json
-    return jsonify({"message": f"Resource change applied: {data.get('resourceType')} change by {data.get('delta')}."}), 200
-
-@app.route("/api/simulation/action", methods=["POST"])
-@require_auth
-def simulate_action():
-    data = request.json
-    return jsonify({"message": f"Action {data.get('action')} initiated."}), 200
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=False)
